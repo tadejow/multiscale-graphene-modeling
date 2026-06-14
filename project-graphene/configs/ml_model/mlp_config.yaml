@@ -1,14 +1,13 @@
 # configs/ml_model/mlp_config.yaml
 paths:
-  data_archive: "../data/RESULTS.tgz"
-  extract_dir: "../data/extracted_results"
-  model_save_path: "saved_models/viscosity_mlp.pth"
+  data_archive: "../data/data_fireball/RESULTS.tgz"
+  extract_dir: "../data/data_fireball/extracted_results"
+  learning_output_dir: "../data/data_learning"
 
 model:
   input_dim: 5          # [d1, d2, d3, v_F, D(E_F)]
-  hidden_dims: [64, 32] # Architektura ukrytych warstw
+  hidden_dims: [64, 64, 32] # Architektura znormalizowana
   output_dim: 1         # Kinematyczna lepkość (nu)
-  activation: "relu"    # Funkcja aktywacji
 
 training:
   batch_size: 16
