@@ -1,0 +1,53 @@
+# ==========================================
+# Python Artifacts
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ==========================================
+# Virtual Environments
+# ==========================================
+venv/
+env/
+ENV/
+.venv/
+
+# ==========================================
+# IDEs and Editors
+# ==========================================
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ==========================================
+# Data, Logs and Results (Fireball / ML)
+# ==========================================
+*.tgz
+*.tar.gz
+*.dat
+*.log
+*.out
+CHARGES
+NEIGHBORS
+NEIGHBORS_PP
+project-graphene/data/extracted_results/
+project-graphene/data/*.tgz
+
+# ==========================================
+# OS Generated Files
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ==========================================
+# Jupyter Notebooks checkpoints
+# ==========================================
+.ipynb_checkpoints

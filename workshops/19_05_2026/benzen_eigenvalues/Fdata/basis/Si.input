@@ -1,0 +1,24 @@
+Si                                    Atom name 
+14                                    Atomic number
+28.0855                               Atomic mass 
+cinput/014.pp                         pseudopotential filename
+cinput/014_560.na0                    Neutral atom filename
+3                                     number shells
+0                                     L of the shell-1
+2.0                                   xn1 occupation number
+4.80                                  Rc
+cinput/014_480.wf1                    Wavefunction name
+cinput/014_480.na1                    state-1 potential
+1                                     L of the shell-1
+2.0                                   xn2 occupation number
+5.40                                  Rc
+cinput/014_540.wf2                    Wavefunction name
+cinput/014_540.na2                    state-1 potential
+2                                     L of the shell-1
+0.0                                   xn2 occupation number
+5.60                                  Rc
+cinput/014_560.wf3                    Wavefunction name
+cinput/014_560.na3                    state-1 potential
+2                                     for xc - shell of changed charge
+0.2                                   dq of the changed shell for xc
+0.2 0.2 0.05 0.05

@@ -1,0 +1,19 @@
+H                                     atom name 
+1                                     atomic number
+1.00794                               atomic mass 
+cinput/001.pp                         pseudopotential filename
+cinput/001_380.na0                    neutral atom filename
+2                                     number of shells
+0                                     l of the shell-1
+1.0                                   xn1 occupation number
+3.8                                   cutoff
+cinput/001_380.wf1                    wavefunction filename
+cinput/001_380.na1                    state-1 potential filename
+0                                     l of the shell-1
+0.0                                   xn1 occupation number
+3.8                                   cutoff
+cinput/001_380.ewf1                    wavefunction filename
+cinput/001_380.ena1                    state-1 potential filename
+1                                     for xc - shell of changed charge
+0.25                                   dq of the changed shell for xc
+0.20  0.10 

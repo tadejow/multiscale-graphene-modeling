@@ -1,0 +1,1030 @@
+                Welcome to FIREBALL CZ !     
+           A fast local orbital QMD Package    
+               Version  1.0.3 28/5/2008    
+      brought to you by the Fireball Committee: 
+   
+                  James P. Lewis 
+         Department of Physics and Astronomy 
+              Brigham Young University 
+   
+                  Otto F. Sankey 
+        Department of Physics and Astronomy 
+            Arizona State University 
+   
+                   Jose Ortega 
+              Departmento de Fisica 
+        Teorica de la Materia Condensada 
+              Universidad de Madrid 
+   
+                 Pavel Jelinek 
+              Institute of Physics 
+             Prague, Czech Republic 
+   
+   
+              with contributions from: 
+   
+  Alex A. Demkov (Motorola Physical Sciences Research Labs)
+  Gary B. Adams (Arizona State University) 
+  Jian Jun Dong (Arizona State University) 
+  David A. Drabold (Ohio University) 
+  Peter A. Fedders (Washington University) 
+  Kurt R. Glaesemann (University of Utah) 
+  Kevin Schmidt (Arizona State University) 
+  Spencer Shellman (University of Utah) 
+  John Tomfohr (Arizona State University) 
+  Hao Wang (Brigham Young University) 
+   
+      Latest version 10 Jan. 2005 
+   
+          See Copyright information: 
+            !!!Proprietory Code!!! 
+   
+  Usable only with permission from the Fireball executive 
+  committee. This program is NOT, under any circumstances, 
+  to be transfered to an unauthorized user. 
+   
+  This source code is completely dynamical in memory. 
+  No diagnostics.input file to read. Will run normally 
+   
+  ======================================================================
+  Now reading file fireball.in 
+   
+   
+  ======================================================================
+  The name of the basisfile: 
+   file = answer.bas                    
+   
+  ======================================================================
+  The name of the lattice vector file: 
+   file = input.lvs                     
+   
+  ======================================================================
+  The name of the k-points file: 
+   file = input.kpts                    
+   
+  ======================================================================
+  The initial and final time steps for this 
+  simulation (e.g. 101,200). N O T E: setting the initial 
+  time step to a value less than or equal to zero causes 
+  this program to NOT compute any any derivatives or 
+  forces. Thus no simulation, and no calls to forces.
+   
+  nstepi, nstepf =            1           1
+  ======================================================================
+   
+  Input time step in fs (10**-15 sec): 
+  dt =   0.500000000000000     
+   
+  The position-velocity filename: XXX.xv. 
+  This file is input and output if nstepi .ne. 1.
+   file = xv.dat                        
+   
+  The file name for the acfile: XXX.ac. 
+  (acfile records values of acceleration and other 
+   time derivatives for last executed step.) 
+   file = ac.dat                        
+  You can have charge transfer in an SCF theory, or you 
+  can run fixed charges as in the Harris functional. The 
+  fixed charges are set by the info.dat file. These same 
+  charges are the initial guess for the SCF charges. 
+   
+  Input itheory - 
+  This describes the level of theory that you want.
+   0 => Harris 
+   1 => DOGS 
+   2 => extended-Hubbard 
+   3 => Kohn-Sham 
+  itheory =            1
+ 
+  Input itheory_xc - 
+  This describes the exchange-correlation theory used. 
+   0 => Horsfield 
+   1 => generalized Sankey-Niklewski 
+   2 => McWEDA 
+  itheory_xc =            2
+   
+  Would you prefer to use Lowdin charges or Mulliken 
+  charges?  Enter 1 - Lowdin or 2 - Mulliken: 
+  3 - Natural population analysis: 
+  iqout =            3
+   
+  The option exists for changing the charge state of the 
+  system so that it is non-neutral. Insert qstate, the 
+  charge state that you want. 
+  qstate =   0.000000000000000E+000
+   
+  This code allows for free dynamics or quenching. 
+   
+  Insert iquench -
+  iquench =  0 ==> Free dynamics (i.e. pure Newton)
+  iquench = -1 ==> dynamical quenching 
+  iquench = -2 ==> crude constant temperature MD 
+                   (from velocity rescaling) 
+  iquench = -3 ==> power quench 
+  iquench = -4 ==> conjugate gradient minimization 
+  iquench = +n ==> periodic quench every n steps 
+   
+  In the event that you are searching for an energy 
+  minimum, you can also set energy and force tolerances 
+  (etol and ftot) which will stop execution after 
+  tolerance is achieved. These are read from the 
+  the quench.optional file. 
+  iquench =           -1
+   
+ You can do various ensembles such as (0) NVE (also the
+ correct setting for doing quenching, conjugate 
+ gradient, etc.), (1) NVT with velocity rescaling, (2) NVT
+ with a Nose-Hoover chain thermostat and velocity-verlet
+ integrator, (3) NVE with velocity-verlet integrator
+ Insert 0/1/2/3.
+  iensemble=            0
+   
+  The option exists to calculate a crude energy barrier. 
+  The additions described here are designed to "push" the 
+  system of interest from a given initial configuration to 
+  a given final configuration via a "path of least 
+  resistance". 
+   
+  At each time step we take the vector difference, for 
+  each atom, between the current position (at time step #1 
+  this is the initial configuration) and the final, or 
+  desired, configuration.  These difference vectors are 
+  then transformed into unit vectors.  These unit vectors 
+  describe the direction that each atom must move in order 
+  to reach the final configuration. 
+   
+  Next the calculated forces for each atom are examined. 
+  The question is asked, "Does the force on iatom #i have 
+  a nonnegative component in the desired direction?" 
+  (Is force dot unit direction .ge. 0?).  If the answer is 
+  yes, then we are satisfied that iatom is not being 
+  pushed away from its desired final position and we do 
+  nothing.  But, if the answer is no, we add enough force 
+  IN THE DESIRED DIRECTION to make the component of the 
+  force in the desired direction equal to a given value. 
+   
+  This procedure insures that iatom always has some 
+  component of acceleration towards the desired final 
+  position of iatom.  Given enough time, iatom will arrive 
+  at the desired final position.  (Two rare cases are 
+  ignored here, the force on iatom may be exactly zero, 
+  and the dot product may be exactly zero, but these two 
+  cases could be handled if necessary.) 
+  ibarrier =            0
+   
+  In basvec, we will check the big-4 constraints.
+  (1) rcm  = 0
+  (2) pcm  = 0
+  (3) (1/n) (1/2)*sum (m * v**2) = 3/2 kb * T_initial
+  (4) ltot = 0
+   
+  We allow the option of constraining (1)..(4), or 
+  not constraining.
+   
+  If you want to constrain quantities, insert 1.
+  e.g. for no constriants,  insert 0, 0, 0, 0 
+  e.g. for all constraints, insert 1, 1, 1, 1 
+  Insert iconstraints(1-4): 
+     0   1   1   1
+  ======================================================================
+   
+  Do you want to fix the charge? 
+  (This is necessary if you are doing a band-structure 
+  calculation for example). 
+  ifixcharge =            1
+   
+  Do you want to fix the neighbors? 
+  (This is necessary if you are doing a phase transition 
+  type calculation for example). 
+  ifixneigh =            0
+   
+  Are you doing a cluster (gas-phase molecule)? 
+  In other words, do you want to set the coulomb 
+  interaction between cells equal to zero? 
+  icluster =            1
+   
+  Are you using the umbrella sampling algorithm? 
+  Insert 0/1 = N/Y 
+  iumbrella =            0
+   
+  The option exists for adding in the long range van der 
+  Waals interactions (dispersion terms).  This is done 
+  by adding in an empirical terms proportional to 1/R**6, 
+  according to a scheme that determines the C_6 parameters 
+  by using a combination rule. 
+  Are you including the van der Waals interactions? 
+  Insert 0/1 = N/Y 
+  ivdw =            0
+   
+  Do you want to use gaussian expansions to evaluate bcna 
+  three-center integrals? 
+  Note: you must first run gauss_create with the same 
+  input files you used when you ran create!!! 
+  igauss =            0
+   
+  Do you want to reimage the atoms to the central cell at
+  every N time steps? (zero means never).  This is needed
+  if the atoms move a long distance and you get a bad 
+  neighbor map as a result.  Note: the coordinates 
+  printed out will still not be the minimal image.  This 
+  might be incompatible with a barrier or umbrella 
+  calculation.  This option is also automatically set 
+  to zero if you are doing a cluster calculation. 
+  iimage =            0
+   
+  You have the option of calculating the dynamical
+  matrix. You do this by performing ndim X natoms
+  calculations. We displace each atom u0 in
+  each of the ndim directions. 
+  (Normally ndim=3, but may be less for 2d or 
+  1d molecules.) Each of these calculations
+  is performed in turn by the time step loop. So you
+  ultimately need to perform itime=1,ndim*natoms
+  time steps.
+  Do you wish to perform dynamical matrix calculation?
+  idynmat =            0
+   
+  Do you want to apply an external field?  If so and
+  the field is a harmonic osciallator, put 1. Otherwise
+  put zero.
+  iharmonic =            0
+   
+  In a MD simulation you have the option of 
+ allowing the system to warm up or cool down during
+ the course of the simulation.  The change in 
+ temperature will increment linearly over the 
+ course of the simulation.  Thus in order to 
+ have a smooth change in temperature a small 
+ difference between the initial temp and the final 
+ temperature should be used over a large number
+ of time steps.
+  
+ Do you want to change the temperature over the
+ course of an MD simulation? (0=no,1=yes)
+  iendtemp =            0
+   
+ Do you want to use Nugged Elastic Band method
+ to find out minimum energy path? (0=no,1=yes)
+  ineb =            0
+   
+ Do you want to calculate transport?
+ (0=no,1=yes)
+  itrans =            0
+   
+ Do you want to run time-dependent SE ?
+ (0=no,1=yes)
+  itdse =            0
+   
+ Do you want to apply bias voltage ?
+ (0=no,1=yes)
+  ibias =            0
+   
+ Do you want to run nonadiabatic coupling calculation ?
+ (0=no,1=yes)
+  imdet =            0
+   
+ The number of iteration steps for the time-dependent 
+ integration for each dynamical time-step dt
+  nddt =         1000
+   
+ Do you want recalate kpts, lvs and atom positions?
+ (1.0d0=no)
+  rescalar =    1.00000000000000     
+   
+ Do you want see the energy in the second line of the answer.xyz?
+ (0=nothing, 1=energy,temperature 2=energy,temperature,time 3=energy)
+  xyz2line =            1
+   
+  The maximum number of iterations to self- 
+  consistency.
+  max_scf_iterations =          200
+   
+  The convergence criteria for electronic structure,
+  sigmatol =   1.000000000000000E-008
+  ======================================================================
+   
+  the mixing factor in SCF iterations, 
+  bmix =   4.000000000000000E-002
+  ======================================================================
+  The Fermi temperature. This variable determine
+  smearing of (un)occupied states (1 eV = 11604 K)
+  tempfe =    100.000000000000     
+  ======================================================================
+  Writing out eigenvalues. 
+  Writing out fermi occupations. 
+  Writing out dos files 
+  ======================================================================
+   
+  ======================================================================
+  Now we are reading from the info.dat file. 
+   
+  You are using the database created by: 
+   dani                    
+   
+  Number of species in database =            3
+  We will only read these atomic indexes: 
+           6           1
+ 
+  H 
+           1
+  ======================================================================
+   1 - Information for this species 
+  H  - Element 
+    1 - Nuclear Z 
+    1.008 - Atomic Mass 
+   2 - Number of shells 
+    0  0
+   1 - Number of shells (Pseudopotential) 
+    0
+        0.2000 - Radial cutoffs (Pseudopotential) 
+     1.00   0.00
+     3.80   3.80
+    /basis/001_380.wf1         /basis/001_380.ewf1      
+    /basis/001_380.na0         /basis/001_380.na1         /basis/001_380.ena1      
+      -11.1617 - Atomic energy 
+  ======================================================================
+  C 
+           6
+  ======================================================================
+   2 - Information for this species 
+  C  - Element 
+    6 - Nuclear Z 
+   12.011 - Atomic Mass 
+   3 - Number of shells 
+    0  1  2
+   2 - Number of shells (Pseudopotential) 
+    0  1
+        0.9500 - Radial cutoffs (Pseudopotential) 
+     2.00   2.00   0.00
+     4.00   4.50   5.40
+    /basis/006_400.wf1         /basis/006_450.wf2         /basis/006_540.wf3       
+    /basis/006_540.na0         /basis/006_400.na1         /basis/006_450.na2         /basis/006_540.na3       
+     -143.8844 - Atomic energy 
+  ======================================================================
+  Si
+          14
+   
+   
+  Atom Coordinates from Basis File: 
+  ======================================================================
+   Atom #    Type       x          y          z        Species # 
+  ======================================================================
+       1       C      -4.193     -3.948     -0.001        2
+       2       C      -3.106     -3.068      0.003        2
+       3       C      -3.324     -1.687      0.002        2
+       4       C      -4.630     -1.186      0.002        2
+       5       C      -5.717     -2.066     -0.001        2
+       6       C      -5.498     -3.447     -0.006        2
+       7       H      -6.368     -4.152     -0.010        1
+       8       H      -4.018     -5.053     -0.001        1
+       9       H      -2.061     -3.470      0.007        1
+      10       H      -2.455     -0.982      0.004        1
+      11       H      -4.804     -0.080      0.004        1
+      12       H      -6.762     -1.663     -0.002        1
+  ======================================================================
+   
+   
+  You are doing a cluster calculation 
+  Lattice vectors are not needed or read in 
+   
+ mbeta_max =          728
+   
+  You are doing a cluster calculation 
+  k-points are not read in 
+   
+   
+   
+  The Input Masses Are: 
+  ======================================================================
+   Atom #    Type    Mass 
+  ======================================================================
+       1       C      12.01
+       2       C      12.01
+       3       C      12.01
+       4       C      12.01
+       5       C      12.01
+       6       C      12.01
+       7       H       1.01
+       8       H       1.01
+       9       H       1.01
+      10       H       1.01
+      11       H       1.01
+      12       H       1.01
+  ======================================================================
+   
+  ======================================================================
+  You have chosen iquench =           -1
+  Optionally read information from the fireball.in file. 
+   
+   
+  ======================================================================
+  Now reading file fireball.in 
+   
+  In the event that you are searching for an energy 
+  minimum, you can also choose energy and force 
+  tolerances - energy_tol and force_tol. These tolerances 
+  will stop execution after they are achieved. Input a 
+  number for all of the following, even if option is not 
+  being used! 
+  Input energy_tol, force_tol, T_want, taurelax: 
+   
+  energy tolerance =   1.000000000000000E-004  [eV]
+  force tolerance  =   5.000000000000000E-002  [eV/A]
+  T_want =   0.000000000000000E+000  [K]
+  taurelax =    50.0000000000000     
+  ======================================================================
+   
+  We are reading from a charge file. 
+   Charge file corresponds to basisfile = input.bas                               
+   
+   
+  The Input Charges Are: 
+  ======================================================================
+   Atom #    Type    Shells   Charges 
+  ======================================================================
+       1       C       3      0.97  3.11  0.02
+       2       C       3      0.97  3.11  0.02
+       3       C       3      0.97  3.11  0.02
+       4       C       3      0.97  3.11  0.02
+       5       C       3      0.97  3.11  0.02
+       6       C       3      0.97  3.11  0.02
+       7       H       2      0.88  0.01
+       8       H       2      0.88  0.01
+       9       H       2      0.88  0.01
+      10       H       2      0.88  0.01
+      11       H       2      0.88  0.01
+      12       H       2      0.88  0.01
+  ======================================================================
+   
+   Calculated position of the Center-of-Mass:    -4.411   -2.567    0.000
+   
+  Constraining angular momentum!!!! 
+   
+   initial lcm =    0.0000000D+00   0.0000000D+00   0.0000000D+00
+     final lcm =    0.0000000D+00   0.0000000D+00   0.0000000D+00
+  Constraining the velocities about the center-of-mass 
+  Rescaling the velocities based on desired temperature. 
+ T_instantaneous  0.000000000000000E+000
+ T_initial  0.000000000000000E+000
+   
+  Atom Velocities: 
+  ======================================================================
+   Atom #    Type        x           y           z        Species # 
+  ======================================================================
+       1       C      0.00000     0.00000     0.00000        2
+       2       C      0.00000     0.00000     0.00000        2
+       3       C      0.00000     0.00000     0.00000        2
+       4       C      0.00000     0.00000     0.00000        2
+       5       C      0.00000     0.00000     0.00000        2
+       6       C      0.00000     0.00000     0.00000        2
+       7       H      0.00000     0.00000     0.00000        1
+       8       H      0.00000     0.00000     0.00000        1
+       9       H      0.00000     0.00000     0.00000        1
+      10       H      0.00000     0.00000     0.00000        1
+      11       H      0.00000     0.00000     0.00000        1
+      12       H      0.00000     0.00000     0.00000        1
+ 
+  In setgear, using gear order of            5
+ 
+  Initiallizing arrays 
+  Determine maximum number of neighbors. 
+  Determine maximum number of PP-neighbors. 
+   
+  ======================================================================
+  Now we are reading Fdata file. 
+   
+   
+  ======================================================================
+  READING DATA FROM DATA FILES IN FDATA DIRECTORY: 
+  ======================================================================
+   
+  Calling   for 1-center exchange-correlation 
+   
+  Calling read_2c for 2-Center Interaction #            1
+  ======================================================================
+ Opening data file: Fdata/overlap.01.01.dat                                                                             
+ Opening data file: Fdata/overlap.01.06.dat                                                                             
+ Opening data file: Fdata/overlap.06.01.dat                                                                             
+ Opening data file: Fdata/overlap.06.06.dat                                                                             
+   
+  Calling read_2c for 2-Center Interaction #            2
+  ======================================================================
+ Opening data file: Fdata/vna_ontopl_00.01.01.dat                                                                       
+ Opening data file: Fdata/vna_ontopl_00.01.06.dat                                                                       
+ Opening data file: Fdata/vna_ontopl_00.06.01.dat                                                                       
+ Opening data file: Fdata/vna_ontopl_00.06.06.dat                                                                       
+   
+  Calling read_2c for 2-Center Interaction #            3
+  ======================================================================
+ Opening data file: Fdata/vna_ontopr_00.01.01.dat                                                                       
+ Opening data file: Fdata/vna_ontopr_00.01.06.dat                                                                       
+ Opening data file: Fdata/vna_ontopr_00.06.01.dat                                                                       
+ Opening data file: Fdata/vna_ontopr_00.06.06.dat                                                                       
+   
+  Calling read_2c for 2-Center Interaction #            4
+  ======================================================================
+ Opening data file: Fdata/vna_atom_00.01.01.dat                                                                         
+ Opening data file: Fdata/vna_atom_00.01.06.dat                                                                         
+ Opening data file: Fdata/vna_atom_00.06.01.dat                                                                         
+ Opening data file: Fdata/vna_atom_00.06.06.dat                                                                         
+   
+  Calling read_2c for 2-Center Interaction #            5
+  ======================================================================
+ Opening data file: Fdata/vnl.01.01.dat                                                                                 
+ Opening data file: Fdata/vnl.01.06.dat                                                                                 
+ Opening data file: Fdata/vnl.06.01.dat                                                                                 
+ Opening data file: Fdata/vnl.06.06.dat                                                                                 
+   
+  Calling read_2c for 2-Center Interaction #            6
+  ======================================================================
+ Opening data file: Fdata/xc_ontop_00.01.01.dat                                                                         
+ Opening data file: Fdata/xc_ontop_00.01.06.dat                                                                         
+ Opening data file: Fdata/xc_ontop_00.06.01.dat                                                                         
+ Opening data file: Fdata/xc_ontop_00.06.06.dat                                                                         
+   
+  Calling read_2c for 2-Center Interaction #            7
+  ======================================================================
+ Opening data file: Fdata/xc_atom_00.01.01.dat                                                                          
+ Opening data file: Fdata/xc_atom_00.01.06.dat                                                                          
+ Opening data file: Fdata/xc_atom_00.06.01.dat                                                                          
+ Opening data file: Fdata/xc_atom_00.06.06.dat                                                                          
+   
+  Calling read_2c for 2-Center Interaction #            8
+  ======================================================================
+ Opening data file: Fdata/xc_corr_00.01.01.dat                                                                          
+ Opening data file: Fdata/xc_corr_00.01.06.dat                                                                          
+ Opening data file: Fdata/xc_corr_00.06.01.dat                                                                          
+ Opening data file: Fdata/xc_corr_00.06.06.dat                                                                          
+   
+  Calling read_2c for 2-Center Interaction #            9
+  ======================================================================
+ Opening data file: Fdata/dipole_z.01.01.dat                                                                            
+ Opening data file: Fdata/dipole_z.01.06.dat                                                                            
+ Opening data file: Fdata/dipole_z.06.01.dat                                                                            
+ Opening data file: Fdata/dipole_z.06.06.dat                                                                            
+   
+  Calling read_2c for 2-Center Interaction #           12
+  ======================================================================
+ Opening data file: Fdata/coulomb.01.01.dat                                                                             
+ Opening data file: Fdata/coulomb.01.06.dat                                                                             
+ Opening data file: Fdata/coulomb.06.01.dat                                                                             
+ Opening data file: Fdata/coulomb.06.06.dat                                                                             
+   
+  Calling read_2c for 2-Center Interaction #           13
+  ======================================================================
+ Opening data file: Fdata/kinetic.01.01.dat                                                                             
+ Opening data file: Fdata/kinetic.01.06.dat                                                                             
+ Opening data file: Fdata/kinetic.06.01.dat                                                                             
+ Opening data file: Fdata/kinetic.06.06.dat                                                                             
+   
+  Calling read2c for 2-Center Interaction #           15
+  ======================================================================
+ Opening data file: Fdata/den_ontopl_01.01.01.dat                                                                       
+ Opening data file: Fdata/den_ontopl_01.01.06.dat                                                                       
+ Opening data file: Fdata/den_ontopl_01.06.01.dat                                                                       
+ Opening data file: Fdata/den_ontopl_01.06.06.dat                                                                       
+   
+  Calling read2c for 2-Center Interaction #           16
+  ======================================================================
+ Opening data file: Fdata/den_ontopr_01.01.01.dat                                                                       
+ Opening data file: Fdata/den_ontopr_01.01.06.dat                                                                       
+ Opening data file: Fdata/den_ontopr_01.06.01.dat                                                                       
+ Opening data file: Fdata/den_ontopr_01.06.06.dat                                                                       
+   
+  Calling read2c for 2-Center Interaction #           17
+  ======================================================================
+ Opening data file: Fdata/den_atom_01.01.01.dat                                                                         
+ Opening data file: Fdata/den_atom_01.01.06.dat                                                                         
+ Opening data file: Fdata/den_atom_01.06.01.dat                                                                         
+ Opening data file: Fdata/den_atom_01.06.06.dat                                                                         
+   
+  Calling read2c for 2-Center Interaction #           18
+  ======================================================================
+ Opening data file: Fdata/dnuxc_ol_01.01.01.dat                                                                         
+ Opening data file: Fdata/dnuxc_ol_01.01.06.dat                                                                         
+ Opening data file: Fdata/dnuxc_ol_01.06.01.dat                                                                         
+ Opening data file: Fdata/dnuxc_ol_01.06.06.dat                                                                         
+   
+  Calling read2c for 2-Center Interaction #           19
+  ======================================================================
+ Opening data file: Fdata/dnuxc_or_01.01.01.dat                                                                         
+ Opening data file: Fdata/dnuxc_or_01.01.06.dat                                                                         
+ Opening data file: Fdata/dnuxc_or_01.06.01.dat                                                                         
+ Opening data file: Fdata/dnuxc_or_01.06.06.dat                                                                         
+   
+  Calling read2c for 2-Center Interaction #           20
+  ======================================================================
+ Opening data file: Fdata/denS_ontopl_01.01.01.dat                                                                      
+ Opening data file: Fdata/denS_ontopl_01.01.06.dat                                                                      
+ Opening data file: Fdata/denS_ontopl_01.06.01.dat                                                                      
+ Opening data file: Fdata/denS_ontopl_01.06.06.dat                                                                      
+   
+  Calling read2c for 2-Center Interaction #           21
+  ======================================================================
+ Opening data file: Fdata/denS_ontopr_01.01.01.dat                                                                      
+ Opening data file: Fdata/denS_ontopr_01.01.06.dat                                                                      
+ Opening data file: Fdata/denS_ontopr_01.06.01.dat                                                                      
+ Opening data file: Fdata/denS_ontopr_01.06.06.dat                                                                      
+   
+  Calling read2c for 2-Center Interaction #           22
+  ======================================================================
+ Opening data file: Fdata/denS_atom_01.01.01.dat                                                                        
+ Opening data file: Fdata/denS_atom_01.01.06.dat                                                                        
+ Opening data file: Fdata/denS_atom_01.06.01.dat                                                                        
+ Opening data file: Fdata/denS_atom_01.06.06.dat                                                                        
+   
+  Calling read2c for 2-Center Interaction #           23
+  ======================================================================
+ Opening data file: Fdata/overlapS.01.01.dat                                                                            
+ Opening data file: Fdata/overlapS.01.06.dat                                                                            
+ Opening data file: Fdata/overlapS.06.01.dat                                                                            
+ Opening data file: Fdata/overlapS.06.06.dat                                                                            
+   
+  Calling read3c for 3-Center Interaction #            1
+  ======================================================================
+ Opening data file: Fdata/bcna_01_00.01.01.01.dat                                                                       
+ Opening data file: Fdata/bcna_01_00.01.01.06.dat                                                                       
+ Opening data file: Fdata/bcna_01_00.01.06.01.dat                                                                       
+ Opening data file: Fdata/bcna_01_00.01.06.06.dat                                                                       
+ Opening data file: Fdata/bcna_01_00.06.01.01.dat                                                                       
+ Opening data file: Fdata/bcna_01_00.06.01.06.dat                                                                       
+ Opening data file: Fdata/bcna_01_00.06.06.01.dat                                                                       
+ Opening data file: Fdata/bcna_01_00.06.06.06.dat                                                                       
+   
+  Calling read3c for 3-Center Interaction #            3
+  ======================================================================
+ Opening data file: Fdata/den3_01_01.01.01.01.dat                                                                       
+ Opening data file: Fdata/den3_01_01.01.01.06.dat                                                                       
+ Opening data file: Fdata/den3_01_01.01.06.01.dat                                                                       
+ Opening data file: Fdata/den3_01_01.01.06.06.dat                                                                       
+ Opening data file: Fdata/den3_01_01.06.01.01.dat                                                                       
+ Opening data file: Fdata/den3_01_01.06.01.06.dat                                                                       
+ Opening data file: Fdata/den3_01_01.06.06.01.dat                                                                       
+ Opening data file: Fdata/den3_01_01.06.06.06.dat                                                                       
+   
+  Calling read3c for 3-Center Interaction #            4
+  ======================================================================
+ Opening data file: Fdata/deS3_01_01.01.01.01.dat                                                                       
+ Opening data file: Fdata/deS3_01_01.01.01.06.dat                                                                       
+ Opening data file: Fdata/deS3_01_01.01.06.01.dat                                                                       
+ Opening data file: Fdata/deS3_01_01.01.06.06.dat                                                                       
+ Opening data file: Fdata/deS3_01_01.06.01.01.dat                                                                       
+ Opening data file: Fdata/deS3_01_01.06.01.06.dat                                                                       
+ Opening data file: Fdata/deS3_01_01.06.06.01.dat                                                                       
+ Opening data file: Fdata/deS3_01_01.06.06.06.dat                                                                       
+  ======================================================================
+  Running setterp_2d. Set up two-dimensional interpolator. 
+   
+  ======================================================= 
+              Begin molecular dynamics simulation. 
+  ======================================================= 
+   
+   
+   
+  ****************************************************** 
+  Begin time step =            1  scf step =            1
+  ****************************************************** 
+   
+   
+  ======================================================================
+  Now we are assembling piecies of Hamiltonian. 
+   
+   
+  ======================================================================
+  Now we are assembling McWeda Hamiltonian. 
+   
+  Determine maximum number of neighbors. 
+  Determine maximum number of PP-neighbors. 
+  Welcome to neighbors - determine mapping of neighbors. 
+  Welcome to neighborsPP - determine mapping of PP neighbors. 
+   
+   
+  Welcome to common_neighbors - determine mapping of 
+  common neighbors. 
+  Welcome to common_neighborsPP - determine mapping of 
+  common neighbors for Pseudopotential. 
+   
+  ***************************************************** 
+  Assemble one-center interactions. 
+  Assemble OLS-xc exchange-correlation interactions. 
+   
+  Assemble two-center interactions. 
+  Assemble OLS-xc exchange-correlation interactions.
+  Assembling on-site part.
+  Assembling off-site part.
+  Assemble two-center DOGS interactions. 
+   
+  Assemble three-center interactions. 
+  Assemble three-center PP interactions. 
+  Assemble three-center DOGS interactions. 
+  Assemble long-range interactions. 
+  ***************************************************** 
+  Call diag_k
+   
+  ****************************************************** 
+   
+          Welcome to kspace -- ikpoint =            1
+   
+  ****************************************************** 
+  Call diagonalizer for overlap. 
+                   The overlap eigenvalues: 
+  ******************************************************* 
+        0.0879        0.2373        0.2375        0.2612
+        0.2697        0.3418        0.3419        0.3858
+        0.4248        0.4249        0.4737        0.4737
+        0.4817        0.5738        0.5741        0.5935
+        0.5936        0.6966        0.7634        0.7641
+        0.9538        0.9585        0.9587        1.0912
+        1.0915        1.2197        1.2200        1.2385
+        1.2431        1.2432        1.2503        1.2530
+        1.2536        1.4334        1.4606        1.6868
+       13.1292       17.9008       17.9038       19.0887
+       19.1007       22.3845       23.9200       24.5854
+       24.5936       31.4764       33.1010       33.1210
+       49.9513       70.1123       70.1144      112.3555
+      112.3737      123.5086      123.5235      143.6359
+      143.6953      149.0938      154.1278      163.9827
+      196.9695      205.8331      205.9060      221.6149
+      221.6507      258.6883
+   
+  Call diagonalizer for Hamiltonian. 
+             The energy eigenvalues: 
+  *********************************************** 
+ lwork =         858
+      -21.4850      -18.9811      -18.9804      -15.4666
+      -15.4630      -13.1633      -11.9946      -11.3666
+      -10.6767      -10.6735       -9.2552       -8.9069
+       -8.9054       -6.6197       -6.6185       -1.3535
+       -1.3529        2.7267        3.1281        5.1060
+        5.1106        7.1706        7.2752        7.2826
+        9.2533        9.2619        9.9206        9.9277
+       15.1871       16.4438       19.4696       20.1851
+       21.7473       23.3638       23.3694       23.7806
+       25.1039       25.1088       26.1454       26.1512
+       26.1620       27.6882       27.6904       31.4366
+       31.4454       31.7889       36.5280       38.6814
+       38.6861       39.4623       39.4788       43.1374
+       43.1640       43.4080       44.9576       44.9633
+       48.2964       48.3128       53.7387       54.7472
+       54.7526       56.3473       56.4898       63.1684
+       63.1785       91.0282
+ Wellcome to dos subroutine ...  
+   
+   
+  ****************************************************** 
+   
+                    Welcome to denmat --              
+   
+  ****************************************************** 
+  Fermi Level =   -3.90484189989201     
+   
+  We write out the occupancies of the levels  
+  ----- ioccupy_k, from the subroutine fermie 
+   
+  ------ fermi ioccupy_k for k-point =            1
+ Band n =    1 k-points: ioccupy =  1
+ Band n =    2 k-points: ioccupy =  1
+ Band n =    3 k-points: ioccupy =  1
+ Band n =    4 k-points: ioccupy =  1
+ Band n =    5 k-points: ioccupy =  1
+ Band n =    6 k-points: ioccupy =  1
+ Band n =    7 k-points: ioccupy =  1
+ Band n =    8 k-points: ioccupy =  1
+ Band n =    9 k-points: ioccupy =  1
+ Band n =   10 k-points: ioccupy =  1
+ Band n =   11 k-points: ioccupy =  1
+ Band n =   12 k-points: ioccupy =  1
+ Band n =   13 k-points: ioccupy =  1
+ Band n =   14 k-points: ioccupy =  1
+ Band n =   15 k-points: ioccupy =  1
+ Band n =   16 k-points: ioccupy =  0
+ Band n =   17 k-points: ioccupy =  0
+ Band n =   18 k-points: ioccupy =  0
+ Band n =   19 k-points: ioccupy =  0
+ Band n =   20 k-points: ioccupy =  0
+ Band n =   21 k-points: ioccupy =  0
+ Band n =   22 k-points: ioccupy =  0
+ Band n =   23 k-points: ioccupy =  0
+ Band n =   24 k-points: ioccupy =  0
+ Band n =   25 k-points: ioccupy =  0
+ Band n =   26 k-points: ioccupy =  0
+ Band n =   27 k-points: ioccupy =  0
+ Band n =   28 k-points: ioccupy =  0
+ Band n =   29 k-points: ioccupy =  0
+ Band n =   30 k-points: ioccupy =  0
+ Band n =   31 k-points: ioccupy =  0
+ Band n =   32 k-points: ioccupy =  0
+ Band n =   33 k-points: ioccupy =  0
+ Band n =   34 k-points: ioccupy =  0
+ Band n =   35 k-points: ioccupy =  0
+ Band n =   36 k-points: ioccupy =  0
+ Band n =   37 k-points: ioccupy =  0
+ Band n =   38 k-points: ioccupy =  0
+ Band n =   39 k-points: ioccupy =  0
+ Band n =   40 k-points: ioccupy =  0
+ Band n =   41 k-points: ioccupy =  0
+ Band n =   42 k-points: ioccupy =  0
+ Band n =   43 k-points: ioccupy =  0
+ Band n =   44 k-points: ioccupy =  0
+ Band n =   45 k-points: ioccupy =  0
+ Band n =   46 k-points: ioccupy =  0
+ Band n =   47 k-points: ioccupy =  0
+ Band n =   48 k-points: ioccupy =  0
+ Band n =   49 k-points: ioccupy =  0
+ Band n =   50 k-points: ioccupy =  0
+ Band n =   51 k-points: ioccupy =  0
+ Band n =   52 k-points: ioccupy =  0
+ Band n =   53 k-points: ioccupy =  0
+ Band n =   54 k-points: ioccupy =  0
+ Band n =   55 k-points: ioccupy =  0
+ Band n =   56 k-points: ioccupy =  0
+ Band n =   57 k-points: ioccupy =  0
+ Band n =   58 k-points: ioccupy =  0
+ Band n =   59 k-points: ioccupy =  0
+ Band n =   60 k-points: ioccupy =  0
+ Band n =   61 k-points: ioccupy =  0
+ Band n =   62 k-points: ioccupy =  0
+ Band n =   63 k-points: ioccupy =  0
+ Band n =   64 k-points: ioccupy =  0
+ Band n =   65 k-points: ioccupy =  0
+ Band n =   66 k-points: ioccupy =  0
+   
+  We write out the electron fraction in each level 
+  ------ from the subroutine fermie. 
+   
+  ------ fermi foccupy for k-point =            1
+ Band n =    1 foccupy =  1.000
+ Band n =    2 foccupy =  1.000
+ Band n =    3 foccupy =  1.000
+ Band n =    4 foccupy =  1.000
+ Band n =    5 foccupy =  1.000
+ Band n =    6 foccupy =  1.000
+ Band n =    7 foccupy =  1.000
+ Band n =    8 foccupy =  1.000
+ Band n =    9 foccupy =  1.000
+ Band n =   10 foccupy =  1.000
+ Band n =   11 foccupy =  1.000
+ Band n =   12 foccupy =  1.000
+ Band n =   13 foccupy =  1.000
+ Band n =   14 foccupy =  1.000
+ Band n =   15 foccupy =  1.000
+ Band n =   16 foccupy =  0.000
+ Band n =   17 foccupy =  0.000
+ Band n =   18 foccupy =  0.000
+ Band n =   19 foccupy =  0.000
+ Band n =   20 foccupy =  0.000
+ Band n =   21 foccupy =  0.000
+ Band n =   22 foccupy =  0.000
+ Band n =   23 foccupy =  0.000
+ Band n =   24 foccupy =  0.000
+ Band n =   25 foccupy =  0.000
+ Band n =   26 foccupy =  0.000
+ Band n =   27 foccupy =  0.000
+ Band n =   28 foccupy =  0.000
+ Band n =   29 foccupy =  0.000
+ Band n =   30 foccupy =  0.000
+ Band n =   31 foccupy =  0.000
+ Band n =   32 foccupy =  0.000
+ Band n =   33 foccupy =  0.000
+ Band n =   34 foccupy =  0.000
+ Band n =   35 foccupy =  0.000
+ Band n =   36 foccupy =  0.000
+ Band n =   37 foccupy =  0.000
+ Band n =   38 foccupy =  0.000
+ Band n =   39 foccupy =  0.000
+ Band n =   40 foccupy =  0.000
+ Band n =   41 foccupy =  0.000
+ Band n =   42 foccupy =  0.000
+ Band n =   43 foccupy =  0.000
+ Band n =   44 foccupy =  0.000
+ Band n =   45 foccupy =  0.000
+ Band n =   46 foccupy =  0.000
+ Band n =   47 foccupy =  0.000
+ Band n =   48 foccupy =  0.000
+ Band n =   49 foccupy =  0.000
+ Band n =   50 foccupy =  0.000
+ Band n =   51 foccupy =  0.000
+ Band n =   52 foccupy =  0.000
+ Band n =   53 foccupy =  0.000
+ Band n =   54 foccupy =  0.000
+ Band n =   55 foccupy =  0.000
+ Band n =   56 foccupy =  0.000
+ Band n =   57 foccupy =  0.000
+ Band n =   58 foccupy =  0.000
+ Band n =   59 foccupy =  0.000
+ Band n =   60 foccupy =  0.000
+ Band n =   61 foccupy =  0.000
+ Band n =   62 foccupy =  0.000
+ Band n =   63 foccupy =  0.000
+ Band n =   64 foccupy =  0.000
+ Band n =   65 foccupy =  0.000
+ Band n =   66 foccupy =  0.000
+   
+   Renormalization of Qin:   renorm =         0.00000000
+  (Before renormalization) zouttot =    30.0000000000000     
+  (After  renormalization)  zcheck =    30.0000000000000     
+  (What it must be)           ztot =    30.0000000000000     
+   
+ =============> sigma =  0.0000000E+00 Must be less than 0.1000000E-07 SCF step =   1
+   
+  !!! !!! !!! BEWARE !!! !!! !!!
+  You have chosen ifixcharge = 1 so we do NOT iterate 
+  to self consistancy!!! (Normally ifixcharge = 0) 
+   
+  ------- THE TOTAL BAND STRUCTURE ENERGY ------- 
+   
+ EBS =          -377.113095 Time step =     1 SCF step =    1 SCF success! 
+  ----------------------------------------------- 
+   
+  ======================================================================
+  Now we are performing post-scf analysis. 
+   
+   
+  ======================================================================
+  Now we are calculating the total energy. 
+   
+   
+  Welcome to assemble_usr.f! 
+   
+  ---------- T H E  T O T A L  E N E R G Y ----------- 
+   Time step =      1 SCF step =   1 etot/atom =     -84.117547
+   
+             ebs =     -377.113095
+       uii - uee =     -728.877422
+       etotxc_1c =        0.000000
+          uxcdcc =       96.579950
+            ETOT =    -1009.410567
+       Etot/atom =      -84.117547
+   Atomic Energy =     -930.276360
+       CohesiveE =      -79.134207
+   
+   Cohesive Energy per atom  =       -6.594517
+  ----------------------------------------------------- 
+   
+  ================= Move on to Forces ================= 
+   
+  ======================================================================
+  Now we are assembling forces. 
+   
+   
+   
+  ***************************************************** 
+  Dassemble two-center force contributions. 
+  Dassemble two-center PP force contributions. 
+  Dassemble on-site OSLXC force contributions. 
+  Dassemble two-center DOGS force contributions. 
+   
+  Dassemble three-center force contributions. 
+  Dassemble three-center PP force contributions. 
+  Dassemble three-center DOGS force contributions. 
+  Dassemble three-center long-range contributions. 
+  Dassemble off-site OLS exchange-correlation forces. 
+  ***************************************************** 
+   
+   
+  ***************************************************** 
+  Assemble all force contributions. 
+  Welcome to assemble_F - ftot assembled here. 
+   
+  The grand total force (eV/A): 
+   iatom =    1 ftot      =   0.369901E+00 -0.222669E+01  0.545115E-02
+   iatom =    2 ftot      =   0.211101E+01 -0.801688E+00  0.954448E-02
+   iatom =    3 ftot      =   0.175843E+01  0.141490E+01  0.247452E-02
+   iatom =    4 ftot      =  -0.367428E+00  0.222589E+01  0.919795E-02
+   iatom =    5 ftot      =  -0.211006E+01  0.801974E+00  0.147534E-02
+   iatom =    6 ftot      =  -0.176032E+01 -0.141170E+01 -0.808394E-02
+   iatom =    7 ftot      =   0.464134E+00  0.369074E+00  0.112573E-01
+   iatom =    8 ftot      =  -0.101603E+00  0.585719E+00 -0.882039E-02
+   iatom =    9 ftot      =  -0.555847E+00  0.207519E+00 -0.114250E-01
+   iatom =   10 ftot      =  -0.462916E+00 -0.371078E+00  0.779583E-02
+   iatom =   11 ftot      =   0.986030E-01 -0.585455E+00 -0.843277E-02
+   iatom =   12 ftot      =   0.556089E+00 -0.208470E+00 -0.104345E-01
+   
+   Cartesian Forces:  Max =       2.22668891    RMS =       0.95277153
+   
+   
+  Predictor-Corrector: correct positions. 
+ T_instantaneous  0.000000000000000E+000
+   
+   average temperature       =     0.00
+   
+                      nuclear kinetic energy =         0.00000000
+   Grand Total = nuclear kinetic + potential =     -1009.41056666
+                       total energy per atom =       -84.11754722
+                 grand total energy per atom =       -84.11754722
+                          deltaE/atom  (meV) =         0.00000000
+   
+  Writing positions and velocities to the xvfile: 
+  Writing accelerations to the acfile. 
+   deltae, etotnew, etotold =   1009.41056666   -84.11754722     0.00000000
+   deltaFmax =    2.22668890728308        force_tol =  5.000000000000000E-002
+    Checking MD convergence : 
+   ++++ iter =        1 Etot=     -84.11754722 Fi_max=       2.226689
+    +++ Etot  RES =   1009.41056666  TOL =       0.00010000   NOT CONVERGED 
+    +++ Fmax  RES =      2.22668891  TOL =       0.05000000   NOT CONVERGED 
+   
+           center of mass position =  -0.4411D+01 -0.2567D+01  0.9341D-07
+           center of mass velocity =   0.0000D+00  0.0000D+00  0.0000D+00
+   center of mass angular momentum =   0.0000D+00  0.0000D+00  0.0000D+00
+   No quenching. T_instantaneous =        0.0000 T_previous =       0.0000
+  FIREBALL RUNTIME :    5.96909300000000      [sec]

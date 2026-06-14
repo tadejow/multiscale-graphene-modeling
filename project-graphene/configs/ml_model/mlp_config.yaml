@@ -1,0 +1,19 @@
+# configs/ml_model/mlp_config.yaml
+paths:
+  data_archive: "../data/RESULTS.tgz"
+  extract_dir: "../data/extracted_results"
+  model_save_path: "saved_models/viscosity_mlp.pth"
+
+model:
+  input_dim: 5          # [d1, d2, d3, v_F, D(E_F)]
+  hidden_dims: [64, 32] # Architektura ukrytych warstw
+  output_dim: 1         # Kinematyczna lepkość (nu)
+  activation: "relu"    # Funkcja aktywacji
+
+training:
+  batch_size: 16
+  epochs: 500
+  learning_rate: 0.001
+  weight_decay: 0.0001  # Tikhonov L2 Regularization (lambda)
+  test_split: 0.2
+  random_seed: 42
