@@ -1,0 +1,21 @@
+# configs/fenics/gurzhi_config.yaml
+paths:
+  output_dir: "../data/data_fenics"
+
+geometry:
+  channel_length: 4.0      # L
+  channel_width: 1.0       # W
+  disk_radius: 0.6         # R
+  disk_center_x: 0.0
+  # Środek dysku przesunięty w dół, aby stworzyć szczelinę (opening gap 'a')
+  disk_center_y: -0.35
+  mesh_resolution: 120     # Gęstość siatki elementów skończonych
+
+physics:
+  # D_nu = 0.28 um to wartość dopasowana w eksperymencie ETHZ dla R=0.6 um
+  gurzhi_length: 0.28
+  inflow_current_density: 1.0  # J_0 na wejściu
+
+solver:
+  element_velocity_degree: 2 # P2 dla prędkości (J)
+  element_pressure_degree: 1 # P1 dla ciśnienia (phi)
