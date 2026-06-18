@@ -5,7 +5,7 @@ Recreates the ETHZ experimental geometry using Gmsh and imports it to dolfinx.
 import logging
 import gmsh
 from mpi4py import MPI
-from dolfinx.io import gmshio
+from dolfinx.io import gmsh as gmshio
 from dolfinx.mesh import Mesh
 
 class GrapheneDeviceMesh:
@@ -21,6 +21,9 @@ class GrapheneDeviceMesh:
     def _build_mesh(self) -> Mesh:
         logging.info("Initializing Gmsh and constructing solid geometry (CSG)...")
         gmsh.initialize()
+
+        # Wyciszenie logów Gmsh w terminalu (by nie śmieciły w Slurmie)
+        gmsh.option.setNumber("General.Terminal", 0)
         gmsh.model.add("graphene_device")
 
         # 1. Główny kanał
@@ -33,8 +36,10 @@ class GrapheneDeviceMesh:
         gmsh.model.occ.fuse([(2, rect)], [(2, disk)])
         gmsh.model.occ.synchronize()
 
-        # Dodanie grupy fizycznej dla powierzchni (niezbędne do importu FEniCSx)
-        gmsh.model.addPhysicalGroup(2, [1], 1)
+        # Dynamiczne pobranie tagów powierzchni po fuzji (usuwa Ostrzeżenia OpenCASCADE)
+        surfaces = gmsh.model.getEntities(dim=2)
+        surface_tags = [tag for dim, tag in surfaces]
+        gmsh.model.addPhysicalGroup(2, surface_tags, 1)
 
         # 4. Ustawienie gęstości siatki
         mesh_size = self.length / self.resolution
@@ -45,9 +50,11 @@ class GrapheneDeviceMesh:
         gmsh.model.mesh.generate(2)
 
         # 5. Konwersja modelu Gmsh do FEniCSx Mesh
-        mesh, cell_markers, facet_markers = gmshio.model_to_mesh(
+        # Odbieramy cały wynik i bierzemy tylko [0], co uodparnia kod na zmiany w API
+        gmsh_output = gmshio.model_to_mesh(
             gmsh.model, MPI.COMM_WORLD, 0, gdim=2
         )
+        mesh = gmsh_output[0]  # Siatka FEniCSx jest zawsze na pierwszym miejscu
 
         gmsh.finalize()
         logging.info("Mesh generated successfully and imported to dolfinx.")

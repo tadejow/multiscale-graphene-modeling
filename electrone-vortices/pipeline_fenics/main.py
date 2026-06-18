@@ -5,7 +5,8 @@ import logging
 import yaml
 from pathlib import Path
 from mpi4py import MPI
-from dolfinx import io
+from dolfinx import io, fem
+import basix.ufl
 
 from geometry import GrapheneDeviceMesh
 from solver import GurzhiSolver
@@ -51,14 +52,26 @@ def main():
 
     J_field, phi_field = solver.solve()
 
-    # 4. Zapis wyników do XDMF (zoptymalizowane pod ParaView)
+    # 4. Interpolacja P2 -> P1 dla zapisu XDMF
+    # Pola wektorowe Taylor-Hooda mają stopień 2 (P2), a siatka ma stopień 1 (P1).
+    # Rzutujemy prędkość do przestrzeni liniowej przed eksportem.
+    logging.info("Interpolating high-order functions to linear space for XDMF export...")
+    cell_name = mesh.topology.cell_name()
+    v_cg1 = basix.ufl.element("CG", cell_name, 1, shape=(mesh.geometry.dim,))
+    V_p1 = fem.functionspace(mesh, v_cg1)
+
+    J_out = fem.Function(V_p1)
+    J_out.interpolate(J_field)
+    J_out.name = "Current_Density"
+
+    phi_field.name = "Potential"  # Cisnienie (phi) jest z definicji P1, więc jest gotowe do zapisu
+
+    # 5. Zapis wyników do XDMF (zoptymalizowane pod ParaView)
     logging.info(f"Exporting solutions to {out_dir}...")
-    J_field.name = "Current_Density"
-    phi_field.name = "Potential"
 
     with io.XDMFFile(MPI.COMM_WORLD, str(out_dir / "current_density.xdmf"), "w") as xdmf:
         xdmf.write_mesh(mesh)
-        xdmf.write_function(J_field)
+        xdmf.write_function(J_out)
 
     with io.XDMFFile(MPI.COMM_WORLD, str(out_dir / "potential.xdmf"), "w") as xdmf:
         xdmf.write_mesh(mesh)

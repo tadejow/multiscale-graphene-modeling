@@ -80,8 +80,9 @@ def main():
         out_dir=out_dir
     )
 
-    trainer.train(train_loader=train_loader, epochs=cfg['training']['epochs'])
+    trainer.train(train_loader=train_loader, val_loader=test_loader, epochs=cfg['training']['epochs'])
     trainer.evaluate(test_loader=test_loader)
+
 
 if __name__ == "__main__":
     main()
