@@ -110,7 +110,7 @@ class ViscosityHeatmapGenerator:
         # Podstawowa stała sieci to a_0 = 2.46 Angstroma
         a_local = 2.46 * (1.0 + strain)
 
-        # 3. Rygorystyczna ekstrakcja cech kwantowych z interpolacji Fireballa!
+        # 3. Ekstrakcja cech kwantowych z interpolacji Fireballa!
         d_cc = a_local / np.sqrt(3.0)
         v_f = self.interp_vf(a_local)
         d_ef = self.interp_def(a_local)
